@@ -1,0 +1,93 @@
+int W = 0; 
+int X = 0;
+int Y = 0;
+int A = 0;
+int B = 0;
+
+void setup() {
+  pinMode(2, INPUT);    // W
+  pinMode(3, INPUT);    // X
+  pinMode(4, INPUT);    // Y
+  pinMode(5, INPUT);    // A
+  pinMode(6, INPUT);    // B
+  pinMode(8, OUTPUT);   // Sum
+  pinMode(9, OUTPUT);   // Acarr
+  pinMode(10, OUTPUT);  // Infinito
+  pinMode(11, OUTPUT);  // Indefinido
+  pinMode(12, OUTPUT);
+}
+
+void loop() {
+  // Reinicio de pines de salida antes de evaluar condiciones
+  digitalWrite(8, LOW);
+  digitalWrite(9, LOW);
+  digitalWrite(10, LOW);
+  digitalWrite(11, LOW);
+  digitalWrite(12, LOW);
+
+  // Lectura de entradas
+  W = digitalRead(2);
+  X = digitalRead(3);
+  Y = digitalRead(4);
+  A = digitalRead(5);
+  B = digitalRead(6);
+
+  // Suma
+  if (!W && !X && Y) {
+    if (A && B) { 
+      digitalWrite(8, HIGH); 
+      digitalWrite(9, HIGH); 
+    } else if (A ^ B) { 
+      digitalWrite(8, HIGH); 
+    }
+  }
+
+  // Resta
+  if (!W && X && Y) {
+    if (A && !B) {
+      // 1 - 0 = 1
+      digitalWrite(8, HIGH);
+    }
+    if (!A && B) {
+      // 0 - 1 = underflow → 3 en binario = 11
+      digitalWrite(8, HIGH);
+      digitalWrite(9, HIGH);
+    }
+  
+  }
+
+  // Multiplicación
+  if (!W && X && !Y) {
+    if (A && B) { 
+      digitalWrite(8, HIGH); // Solo encender si ambos son 1
+    }
+  }
+
+  // División corregida
+  if (W && !X && !Y) {  
+    if (A == 0 && B == 0) {
+      digitalWrite(10, HIGH);  // Indefinido (0/0)
+    } else if (A == 1 && B == 0) {
+      digitalWrite(11, HIGH);  // Infinito (1/0) 
+    } else if (A == 0 && B == 1) {
+      digitalWrite(12, HIGH);   // 0/1 → 0
+    } else if (A == 1 && B == 1) {
+      digitalWrite(8, HIGH);  // 1/1 → 1
+    }
+  }
+
+  // AND
+  if ((A&&B)&&(W && !X && Y)) {
+    digitalWrite(8, HIGH);
+  }
+
+  // OR
+  if ((A || B)&&(W && X && !Y)) {
+    digitalWrite(8, HIGH);
+  }
+
+  // XOR
+  if ((A ^ B)&&(W && X && Y)) {
+    digitalWrite(8, HIGH);
+  }
+}
